@@ -86,14 +86,23 @@ function App() {
 
     setTodos(updatedTodos);
   };
+  //時間を今日の12時に設定
+  const isSameOrBeforeToday = (inputDate) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 今日を 00:00:00で リセット
+    const target = new Date(inputDate);
+    target.setHours(0, 0, 0, 0);
+    return target < today;
+  };
   //TODO登録
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    //内容を書いてない場合
     if (content.trim() === "" || !selectedDate) {
       setError("内容もしくは日付を入力してください");
       return;
-    } else if (selectedDate < nowDate) {
+      //過去日の場合
+    } else if (isSameOrBeforeToday(selectedDate)) {
       setError("過去の日付は設定できません");
     } else {
       const newTodo = {
