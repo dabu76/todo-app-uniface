@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ja } from "date-fns/locale";
 import { forwardRef } from "react";
+import confetti from "canvas-confetti";
 
 import "./App.css";
 
@@ -66,6 +67,14 @@ function App() {
   const handleState = (id) => {
     const updatedTodos = todos.map((todo) => {
       if (todo.id === id) {
+        const newStatus = !todo.status;
+        if (!todo.status && newStatus) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
+        }
         return {
           ...todo,
           status: todo.status === true ? false : true,
