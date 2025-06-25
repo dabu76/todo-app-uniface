@@ -1,4 +1,21 @@
 ■ TODO の登録処理について
+■ 使用技術スタック
+
+- フロントエンド:
+
+  - React
+  - Vite
+  - JavaScript
+  - axios
+
+- バックエンド:
+
+  - ASP.NET Core（C#）
+  - RESTful API 設計（POST / GET / PUT / DELETE）
+
+- データベース:
+
+  - PostgreSQL
 
 - ユーザーがフォームに内容と予定日を入力し、登録ボタンを押すと、
   React から ASP.NET API へ POST リクエストが送信される。
