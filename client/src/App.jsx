@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 //カレンダーライブラリ
@@ -11,6 +11,8 @@ import axios from "axios";
 import "./App.css";
 
 function App() {
+  //バックエンドサーバー連結
+  const API_BASE = "http://localhost:5016/api/todo";
   //カレンダーライブラリ変数
   const [content, setContent] = useState("");
   const [status, setStatus] = useState(false);
@@ -24,6 +26,16 @@ function App() {
   const [editDate, setEditDate] = useState([null, null]);
   const [filter, setFilter] = useState("undone");
 
+  useEffect(() => {
+    axios
+      .get(API_BASE)
+      .then((res) => {
+        setTodos(res.data);
+      })
+      .catch((err) => {
+        console.error("読み込み失敗", err);
+      });
+  }, []);
   // カスタム入力フィールド
   const CustomInput = forwardRef(({ value, onClick }, ref) => (
     <input
@@ -42,27 +54,40 @@ function App() {
     setEditDate([startDate, endDate]);
   };
   //保存を押すとmodifyから貰う変数を実際のtodoに保存して変換
-  const handleUpdate = (id) => {
-    const updatedTodos = todos.map((todo) =>
-      todo.id === id
-        ? {
-            ...todo,
-            content: editContent,
-            startDate: editDate[0],
-            endDate: editDate[1],
-            updatedAt: new Date(),
-          }
-        : todo
-    );
-    setTodos(updatedTodos);
-    setEditingId(null);
-    setEditContent("");
-    setEditDate([null, null]);
+  const handleUpdate = async (id) => {
+    try {
+      const updated = {
+        content: editContent,
+        startDate: editDate[0],
+        endDate: editDate[1],
+        updatedAt: new Date(),
+      };
+      //修正をバックエンドに送信
+      await axios.put(`${API_BASE}/${id}`, {
+        ...updated,
+        status: todos.find((t) => t.id === id).status,
+      });
+
+      const updatedTodos = todos.map((todo) =>
+        todo.id === id ? { ...todo, ...updated } : todo
+      );
+      setTodos(updatedTodos);
+      setEditingId(null);
+      setEditContent("");
+      setEditDate([null, null]);
+    } catch (err) {
+      console.error("更新失敗", err);
+    }
   };
   // 削除ボタンを押すと、対象のTODOを除外する
-  const handleDelete = (id) => {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
+  const handleDelete = async (id) => {
+    //削除をバックエンドに送信
+    try {
+      await axios.delete(`${API_BASE}/${id}`);
+      setTodos(todos.filter((todo) => todo.id !== id));
+    } catch (err) {
+      console.error("削除失敗", err);
+    }
   };
   //状態stateを変換
   const handleState = (id) => {
@@ -96,7 +121,7 @@ function App() {
     return target < today;
   };
   //TODO登録
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     //内容を書いてない場合
     if (
@@ -106,27 +131,32 @@ function App() {
     ) {
       setError("内容もしくは日付を入力してください");
       return;
-      //過去日の場合
-    } else if (isSameOrBeforeToday(selectedDate[0])) {
+    }
+    //過去日の場合
+    else if (isSameOrBeforeToday(selectedDate[0])) {
       setError("過去の日付は設定できません");
-    } else {
-      const newTodo = {
-        id: nextId.current,
-        content,
-        status,
-        startDate: selectedDate[0],
-        endDate: selectedDate[1],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      nextId.current += 1;
+      return;
+    }
 
-      setTodos([...todos, newTodo]);
+    const newTodo = {
+      content,
+      status,
+      startDate: selectedDate[0],
+      endDate: selectedDate[1],
+    };
+
+    //登録をバックエンドに送信
+    try {
+      const res = await axios.post(API_BASE, newTodo);
+      setTodos([...todos, res.data]);
       setContent("");
       setSelectedDate([null, null]);
       setError("");
+    } catch (err) {
+      console.error("追加失敗", err);
     }
   };
+
   //全件、完了、未完了押すとstateを設定
   const handleFilter = (e) => {
     setFilter(e);
@@ -137,6 +167,7 @@ function App() {
     if (filter === "undone") return todo.status === false;
     return true;
   });
+
   return (
     <div className="todo-container">
       <h1> TODOアプリ</h1>
@@ -190,13 +221,17 @@ function App() {
               <p className={todo.status ? "done" : ""}>内容: {todo.content}</p>
             )}
             <p className={todo.status ? "done" : ""}>
-              {todo.updatedAt > todo.createdAt ? "再修正日時:" : "登録日時:"}
-              {new Intl.DateTimeFormat("ja-JP", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                weekday: "short",
-              }).format(todo.updatedAt)}
+              {todo.updatedAt !== todo.createdAt
+                ? "登録日時 : "
+                : "再修正日時 : "}
+              {todo.startDate &&
+                !isNaN(new Date(todo.startDate)) &&
+                new Intl.DateTimeFormat("ja-JP", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  weekday: "short",
+                }).format(new Date(todo.startDate))}
             </p>
             {editingId === todo.id ? (
               <DatePicker
@@ -210,25 +245,28 @@ function App() {
               />
             ) : (
               <p className={todo.status ? "done" : ""}>
-                予定日:
+                {"予定日 : "}
                 {todo.startDate &&
+                  !isNaN(new Date(todo.startDate)) &&
                   new Intl.DateTimeFormat("ja-JP", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
                     weekday: "short",
                   }).format(new Date(todo.startDate))}
-                {todo.endDate && todo.startDate !== todo.endDate && (
-                  <>
-                    {" ～ "}
-                    {new Intl.DateTimeFormat("ja-JP", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      weekday: "short",
-                    }).format(new Date(todo.endDate))}
-                  </>
-                )}
+                {todo.endDate &&
+                  todo.startDate !== todo.endDate &&
+                  !isNaN(new Date(todo.endDate)) && (
+                    <>
+                      {" ～ "}
+                      {new Intl.DateTimeFormat("ja-JP", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        weekday: "short",
+                      }).format(new Date(todo.endDate))}
+                    </>
+                  )}
               </p>
             )}
             <div>
