@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+
 //カレンダーライブラリ
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";

@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\TodoApp\\server\\server.csproj": {}
+    "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\ToDoApp\\server\\server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\TodoApp\\server\\server.csproj": {
+    "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\ToDoApp\\server\\server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\TodoApp\\server\\server.csproj",
+        "projectUniqueName": "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\ToDoApp\\server\\server.csproj",
         "projectName": "server",
-        "projectPath": "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\TodoApp\\server\\server.csproj",
+        "projectPath": "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\ToDoApp\\server\\server.csproj",
         "packagesPath": "C:\\Users\\whght\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\TodoApp\\server\\obj\\",
+        "outputPath": "C:\\Users\\whght\\OneDrive\\바탕 화면\\react\\ToDoApp\\server\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\whght\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\whght\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -37,7 +43,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -46,6 +53,20 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.6, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.4, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -71,7 +92,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.411/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
