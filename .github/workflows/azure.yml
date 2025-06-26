@@ -18,12 +18,12 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Build and Publish inside server folder
+      - name: Build and Publish ASP.NET Core project
         working-directory: ./server
         run: |
           dotnet restore server.csproj
           dotnet build server.csproj --configuration Release
-          dotnet publish server.csproj --configuration Release -o publish
+          dotnet publish server.csproj --configuration Release --output publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
