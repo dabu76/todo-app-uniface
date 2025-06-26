@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB 연결
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-//  CORS 허용
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -32,8 +30,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
-app.UseCors("AllowFrontend"); //  꼭 이 위치에 있어야 함
+app.UseCors("AllowFrontend"); 
 app.UseAuthorization();
 app.MapControllers();
 
