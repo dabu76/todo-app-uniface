@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-//カレンダーライブラリ
+// カレンダーライブラリ
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ja } from "date-fns/locale";
@@ -10,9 +10,12 @@ import axios from "axios";
 import "./App.css";
 
 function App() {
-  //バックエンドサーバー連結
-  const API_BASE = "http://localhost:5016/api/todo";
-  //カレンダーライブラリ変数
+  // バックエンドサーバー連結
+  // ここをAzureにデプロイされたバックエンドのURLに変更します。
+  const API_BASE =
+    "https://webapp-todo-e4e7dphfcyb2e6ae.canadacentral-01.azurewebsites.net/api/todo";
+
+  // カレンダーライブラリ変数
   const [content, setContent] = useState("");
   const [status, setStatus] = useState(false);
   const [selectedDate, setSelectedDate] = useState([null, null]);
