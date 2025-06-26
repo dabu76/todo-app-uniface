@@ -3,34 +3,32 @@ name: Build and Deploy ASP.NET Core to Azure Web App
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout source code
         uses: actions/checkout@v2
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
-      - name: Restore dependencies
-        run: dotnet restore ./server/server.csproj
-
-      - name: Build
-        run: dotnet build ./server/server.csproj --configuration Release
-
-      - name: Publish
-        run: dotnet publish ./server/server.csproj -c Release -o ./server/publish
+      - name: Build and Publish inside server folder
+        working-directory: ./server
+        run: |
+          dotnet restore server.csproj
+          dotnet build server.csproj --configuration Release
+          dotnet publish server.csproj --configuration Release -o publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: webapp-ToDo  
+          app-name: webapp-ToDo
           slot-name: production
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./server/publish
