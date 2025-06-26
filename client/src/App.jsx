@@ -14,7 +14,6 @@ function App() {
   // ここをAzureにデプロイされたバックエンドのURLに変更します。
   const API_BASE =
     "https://webapp-todo-e4e7dphfcyb2e6ae.canadacentral-01.azurewebsites.net/api/todo";
-
   // カレンダーライブラリ変数
   const [content, setContent] = useState("");
   const [status, setStatus] = useState(false);
