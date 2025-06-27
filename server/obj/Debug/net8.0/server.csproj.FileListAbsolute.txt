@@ -138,3 +138,4 @@ C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\obj\Debug\net8.0\rjsm
 C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
 C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Debug\net8.0\server.staticwebassets.runtime.json
