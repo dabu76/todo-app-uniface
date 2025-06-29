@@ -1,8 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Migrations"
+    "\\bin",
+    "\\Controllers",
+    "\\Data",
+    "\\Properties",
+    "\\wwwroot"
   ],
-  "SelectedNode": "\\appsettings.json",
+  "SelectedNode": "\\package.json",
   "PreviewInSolutionExplorer": false
 }
