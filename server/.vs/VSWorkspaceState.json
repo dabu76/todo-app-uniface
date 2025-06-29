@@ -4,9 +4,11 @@
     "\\bin",
     "\\Controllers",
     "\\Data",
+    "\\Dtos",
+    "\\Model",
     "\\Properties",
+    "\\Tests",
     "\\wwwroot"
   ],
-  "SelectedNode": "\\package.json",
   "PreviewInSolutionExplorer": false
 }
