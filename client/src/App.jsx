@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { isSameDay } from "date-fns";
 
 // カレンダーライブラリ
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { ja } from "date-fns/locale";
+import { fi, ja } from "date-fns/locale";
 import { forwardRef } from "react";
 import confetti from "canvas-confetti";
 import axios from "axios";
@@ -61,7 +62,7 @@ function App() {
         content: editContent,
         startDate: editDate[0],
         endDate: editDate[1],
-        updatedAt: new Date(),
+        updatedAt: nowDate,
       };
       //修正をバックエンドに送信
       await axios.put(`${API_BASE}/${id}`, {
@@ -105,7 +106,7 @@ function App() {
         return {
           ...todo,
           status: todo.status === true ? false : true,
-          updatedAt: new Date(),
+          updatedAt: nowDate,
         };
       }
       return todo;
@@ -115,7 +116,7 @@ function App() {
   };
   //時間を今日の12時に設定
   const isSameOrBeforeToday = (inputDate) => {
-    const today = new Date();
+    const today = nowDate;
     today.setHours(0, 0, 0, 0); // 今日を 00:00:00で リセット
     const target = new Date(inputDate);
     target.setHours(0, 0, 0, 0);
@@ -162,16 +163,27 @@ function App() {
   const handleFilter = (e) => {
     setFilter(e);
   };
+
+  const todayTodos = todos.filter((todo) =>
+    isSameDay(new Date(todo.endDate), nowDate)
+  );
+  const todayCount = todayTodos.length;
+
   //設定した変数でfilterを実行
   const filteredTodos = todos.filter((todo) => {
     if (filter === "done") return todo.status === true;
     if (filter === "undone") return todo.status === false;
-    return true;
+    if (filter === "today") return todayTodos.includes(todo);
+    return true; // all 포함
   });
 
   return (
     <div className="todo-container">
-      <h1> TODOアプリ</h1>
+      <div className="todo-container-header">
+        <h1>
+          TODOアプリ <p>本日の業務 {todayCount}</p>
+        </h1>
+      </div>
       <div className="error">{error}</div>
       {/* TODO登録フォーム */}
       <form onSubmit={handleSubmit} className="todo-form">
@@ -198,6 +210,9 @@ function App() {
 
       {/* フィルター切り替えボタン */}
       <div className="filter-buttons">
+        <button className="todo-Btn" onClick={() => handleFilter("today")}>
+          全件
+        </button>
         <button className="todo-Btn" onClick={() => handleFilter("all")}>
           全件
         </button>
