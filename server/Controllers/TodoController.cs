@@ -40,7 +40,7 @@ namespace server.Controllers
         // POST: api/todo
         //프롬 바디 에는 내가 뭘적었는지가 들어가있음 쓰는 이유는 보안적인 부분과 길이 문제때문에 씀
         [HttpPost]
-        public async Task<ActionResult<Todo>> CreateTodo([FromBody] CreateTodoDto dto)
+            public async Task<ActionResult<Todo>> CreateTodo([FromBody] CreateTodoDto dto)
         {
             if (string.IsNullOrEmpty(dto.Content))
                 return BadRequest("Content is required.");
