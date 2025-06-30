@@ -142,3 +142,7 @@ body {
 .hide {
   display: none;
 }
+.today_Btn {
+  color: blue;
+  cursor: pointer;
+}

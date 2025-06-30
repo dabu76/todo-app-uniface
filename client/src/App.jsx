@@ -181,7 +181,10 @@ function App() {
     <div className="todo-container">
       <div className="todo-container-header">
         <h1>
-          TODOアプリ <p>本日の業務 {todayCount}</p>
+          TODOアプリ
+          <p className="today_Btn" onClick={() => handleFilter("today")}>
+            本日の業務 {todayCount}
+          </p>
         </h1>
       </div>
       <div className="error">{error}</div>
@@ -211,7 +214,7 @@ function App() {
       {/* フィルター切り替えボタン */}
       <div className="filter-buttons">
         <button className="todo-Btn" onClick={() => handleFilter("today")}>
-          全件
+          ToDo
         </button>
         <button className="todo-Btn" onClick={() => handleFilter("all")}>
           全件
