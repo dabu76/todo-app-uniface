@@ -52,14 +52,13 @@ public class Program
         app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseHttpsRedirection();
-
-        // ✅ 라우팅 미들웨어 추가 (누락되면 API 동작 안 함)
+        //  라우팅 미들웨어 추가 (누락되면 API 동작 안 함)
         app.UseRouting();
 
         app.UseCors("AllowFrontend");
         app.UseAuthorization();
 
-        // ✅ 컨트롤러 매핑 (API가 여기에 연결됨)
+        // 컨트롤러 매핑 (API가 여기에 연결됨)
         app.MapControllers();
 
         app.Run();
