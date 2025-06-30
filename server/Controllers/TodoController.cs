@@ -40,7 +40,7 @@ namespace server.Controllers
         // POST: api/todo
         //프롬 바디 에는 내가 뭘적었는지가 들어가있음 쓰는 이유는 보안적인 부분과 길이 문제때문에 씀
         [HttpPost]
-        public async Task<ActionResult<Todo>> CreateTodo([FromBody] TodoDto dto)
+        public async Task<ActionResult<Todo>> CreateTodo([FromBody] CreateTodoDto dto)
         {
             if (string.IsNullOrEmpty(dto.Content))
                 return BadRequest("Content is required.");
@@ -67,7 +67,7 @@ namespace server.Controllers
 
         // PUT: api/todo/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTodo(int id, [FromBody] TodoDto dto)
+        public async Task<IActionResult> UpdateTodo(int id, [FromBody] CreateTodoDto dto)
         {
             //orm 으로 아이디가 있는 그 컨텐츠 내용을 가져오고 바 고칠수 있으면 고치기
             var todo = await _context.Todos.FindAsync(id);
@@ -76,13 +76,8 @@ namespace server.Controllers
             // 조회한 데이터에 대해서 업데이티드 데이터로 바꾼다 (더티 체킹)
             todo.Content = dto.Content;
             todo.Status = dto.Status;
-
-            if (dto.StartDate != null)
-                todo.StartDate = dto.StartDate.Value;
-
-            if (dto.EndDate != null)
-                todo.EndDate = dto.EndDate.Value;
-
+            if (dto.StartDate != null) todo.StartDate = dto.StartDate.Value;
+            if (dto.EndDate != null) todo.EndDate = dto.EndDate.Value;
             todo.UpdatedAt = DateTime.UtcNow;
             //여기서 커밋
             await _context.SaveChangesAsync();
