@@ -35,7 +35,22 @@ namespace server.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
-
+        [HttpGet("test-connection")]
+        public async Task<IActionResult> TestConnection()
+        {
+            try
+            {
+                await _context.Database.OpenConnectionAsync();
+                Console.WriteLine("✅ DB 연결 성공");
+                await _context.Database.CloseConnectionAsync();
+                return Ok("DB 연결 성공");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ DB 연결 실패: " + ex.ToString());
+                return StatusCode(500, "DB 연결 실패");
+            }
+        }
         //  POST: api/todo
         // 새로운 할 일 추가
         [HttpPost]
