@@ -35,30 +35,33 @@ public class Program
 
         var app = builder.Build();
 
-        // Swagger 설정 (개발 환경만)
+        // Swagger 설정 (개발 환경에서만)
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
-        // ✅ 개발/프로덕션 모두 예외 상세 페이지 출력하도록 설정
+        // 개발/운영 환경 모두에서 예외 상세 페이지 출력
         if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         {
-            app.UseDeveloperExceptionPage();  // 에러 상세 출력
+            app.UseDeveloperExceptionPage(); // 예외 로그 출력
         }
 
-        // 정적 파일 처리 및 미들웨어 구성
+        // 정적 파일 처리
         app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseHttpsRedirection();
+
+        // ✅ 라우팅 미들웨어 추가 (누락되면 API 동작 안 함)
+        app.UseRouting();
+
         app.UseCors("AllowFrontend");
         app.UseAuthorization();
 
-        // 라우팅
+        // ✅ 컨트롤러 매핑 (API가 여기에 연결됨)
         app.MapControllers();
 
-        // 앱 실행
         app.Run();
     }
 }
