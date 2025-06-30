@@ -19,7 +19,7 @@ namespace server.Controllers
         // 디비가 데이터베이스랑 완전히 똑같이 되어있으면 나중에 고치기도 더 어려워짐 (솔리드에대해서 찾아보기)
         private readonly AppDbContext _context;
 
-        // ✔️ 의존성 주입 (DbContext) - 느슨한 결합, 테스트 용이성 향상
+        // 의존성 주입 (DbContext) - 느슨한 결합, 테스트 용이성 향상
         public TodoController(AppDbContext context)
         {
             _context = context;
@@ -63,7 +63,7 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodo(int id, [FromBody] TodoDto dto)
         {
-            //orm 으로 아이디가 있는 그 컨텐츠 내용을 가져오고
+            //orm 으로 아이디가 있는 그 컨텐츠 내용을 가져오고 바 고칠수 있으면 고치기
             var todo = await _context.Todos.FindAsync(id);
             // 없으면 낫파운드
             if (todo == null) return NotFound();
@@ -77,7 +77,7 @@ namespace server.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
-
+        
         // DELETE: api/todo/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodo(int id)

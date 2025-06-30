@@ -17,7 +17,8 @@ namespace server.Tests
         {
             _client = factory.CreateClient();
         }
-
+        //포스트를 써서 에이피아이에다가 줘서 만들어지는지 테스트 함 지금 하난데 3개 (딜리트 업데이트 풋을 만들어서 컨트롤러에대한 
+        //UT테스트를 완성하는게 좋을거같다
         [Fact]
         public async Task PostTodo_Returns_Created()
         {

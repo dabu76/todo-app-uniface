@@ -5,9 +5,11 @@
     "\\Controllers",
     "\\Data",
     "\\Dtos",
-    "\\Model",
+    "\\Entity",
+    "\\Migrations",
     "\\Properties",
     "\\wwwroot"
   ],
+  "SelectedNode": "\\Data\\AppDbcontext.cs",
   "PreviewInSolutionExplorer": false
 }
