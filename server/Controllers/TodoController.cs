@@ -42,23 +42,35 @@ namespace server.Controllers
         [HttpPost]
         public async Task<ActionResult<Todo>> CreateTodo([FromBody] TodoDto dto)
         {
-            var todo = new Todo
+            if (string.IsNullOrEmpty(dto.Content))
+                return BadRequest("Content is required.");
+
+            if (dto.StartDate == null || dto.EndDate == null)
+                return BadRequest("StartDate and EndDate are required.");
+
+            try
             {
-                Content = dto.Content,
-                Status = dto.Status,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+                var todo = new Todo
+                {
+                    Content = dto.Content,
+                    Status = dto.Status,
+                    StartDate = dto.StartDate.Value,
+                    EndDate = dto.EndDate.Value,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
 
-            _context.Todos.Add(todo); //orm 인서트
-            //데이터베이스 커밋
-            await _context.SaveChangesAsync();
-            // 이걸 하면 성공적으로 만들어졌다는 리스폰스 (스테이터스 와 바디를 줌) 그리고 
-            return CreatedAtAction(nameof(GetTodos), new { id = todo.Id }, todo);
+                _context.Todos.Add(todo);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetTodos), new { id = todo.Id }, todo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during SaveChanges: " + ex.Message);
+                return StatusCode(500, "Internal Server Error");
+            }
         }
-
         // PUT: api/todo/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodo(int id, [FromBody] TodoDto dto)
