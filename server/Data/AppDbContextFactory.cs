@@ -9,9 +9,9 @@ namespace server.Data
 		public AppDbContext CreateDbContext(string[] args)
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-			optionsBuilder.UseNpgsql("Host=unitodo-list.postgres.database.azure.com;Port=5432;Database=ToDo;Username=prostgre;Password=Whghtjd12;");
+            optionsBuilder.UseNpgsql("Host=uni-todo.postgres.database.azure.com;Port=5432;Database=ToDo;Username=postgres;Password=Whghtjd12;SSL Mode=Require;Trust Server Certificate=true;");
 
-			return new AppDbContext(optionsBuilder.Options);
+            return new AppDbContext(optionsBuilder.Options);
 		}
 	}
 }
