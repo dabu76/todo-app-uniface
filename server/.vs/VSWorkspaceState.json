@@ -10,6 +10,6 @@
     "\\Properties",
     "\\wwwroot"
   ],
-  "SelectedNode": "\\appsettings.json",
+  "SelectedNode": "\\Controllers\\TodoController.cs",
   "PreviewInSolutionExplorer": false
 }
