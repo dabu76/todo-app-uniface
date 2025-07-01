@@ -117,3 +117,11 @@ C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\pu
 C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\server.deps.json
 C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\server.runtimeconfig.json
 C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\server.staticwebassets.endpoints.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\web.config
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\appsettings.Development.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\appsettings.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\package-lock.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\package.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\server.deps.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\server.runtimeconfig.json
+C:\Users\whght\OneDrive\바탕 화면\react\ToDoApp\server\bin\Release\net8.0\publish\publish\server.staticwebassets.endpoints.json

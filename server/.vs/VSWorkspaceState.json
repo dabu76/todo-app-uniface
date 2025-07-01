@@ -8,8 +8,8 @@
     "\\Entity",
     "\\Migrations",
     "\\Properties",
-    "\\wwwroot"
+    "\\wwwroot",
+    "\\wwwroot\\assets"
   ],
-  "SelectedNode": "\\Controllers\\TodoController.cs",
   "PreviewInSolutionExplorer": false
 }
