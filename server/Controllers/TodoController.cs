@@ -31,7 +31,7 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("🔥 GET 에러: " + ex.ToString()); // 로그 스트리밍에 출력됨
+                Console.WriteLine(" GET エラー: " + ex.ToString()); // 로그 스트리밍에 출력됨
                 return StatusCode(500, "Internal Server Error");
             }
         }
@@ -41,14 +41,14 @@ namespace server.Controllers
             try
             {
                 await _context.Database.OpenConnectionAsync();
-                Console.WriteLine("✅ DB 연결 성공");
+                Console.WriteLine("DB連結成功");
                 await _context.Database.CloseConnectionAsync();
                 return Ok("DB 연결 성공");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ DB 연결 실패: " + ex.ToString());
-                return StatusCode(500, "DB 연결 실패");
+                Console.WriteLine("DB連結 失敗: " + ex.ToString());
+                return StatusCode(500, "DB連結 失敗");
             }
         }
         //  POST: api/todo
@@ -83,7 +83,7 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("🔥 POST 에러: " + ex.ToString()); // 예외 로그 출력
+                Console.WriteLine("POST エラー: " + ex.ToString()); // 예외 로그 출력
                 return StatusCode(500, "Internal Server Error");
             }
         }
@@ -110,7 +110,7 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("🔥 PUT 에러: " + ex.ToString());
+                Console.WriteLine("PUT エラー: " + ex.ToString());
                 return StatusCode(500, "Internal Server Error");
             }
         }
@@ -132,7 +132,7 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("🔥 DELETE 에러: " + ex.ToString());
+                Console.WriteLine(" DELETE エラー: " + ex.ToString());
                 return StatusCode(500, "Internal Server Error");
             }
         }
