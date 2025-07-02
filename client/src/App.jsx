@@ -3,6 +3,8 @@ import { isSameDay } from "date-fns";
 import axios from "axios";
 import confetti from "canvas-confetti";
 
+import "react-datepicker/dist/react-datepicker.css";
+
 // 分離されたコンポーネントの読み込み
 import TodoItem from "./components/TodoItem";
 import TodoForm from "./components/TodoForm";

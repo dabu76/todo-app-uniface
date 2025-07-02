@@ -1,7 +1,9 @@
 import DatePicker from "react-datepicker";
 import { ja } from "date-fns/locale";
 import { forwardRef } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 
+// 日付ピッカー用のカスタム入力フィールド（forwardRefで参照を渡す）
 const CustomInput = forwardRef(({ value, onClick }, ref) => (
   <input
     className="datepicker-input"
@@ -13,6 +15,7 @@ const CustomInput = forwardRef(({ value, onClick }, ref) => (
   />
 ));
 
+// TODO項目を表示・編集・削除するためのコンポーネント
 export default function TodoItem({
   todo,
   editingId,
@@ -27,6 +30,7 @@ export default function TodoItem({
 }) {
   return (
     <li className={editingId === todo.id ? "editing" : ""}>
+      {/* 内容（表示 or 編集） */}
       {editingId === todo.id ? (
         <input
           value={editContent}
@@ -36,6 +40,7 @@ export default function TodoItem({
         <p className={todo.status ? "done" : ""}>内容: {todo.content}</p>
       )}
 
+      {/* 登録日時 or 更新日時 */}
       <p className={todo.status ? "done" : ""}>
         {todo.updatedAt !== todo.createdAt ? "登録日時 : " : "再修正日時 : "}
         {todo.startDate &&
@@ -47,6 +52,7 @@ export default function TodoItem({
           }).format(new Date(todo.startDate))}
       </p>
 
+      {/* 日付範囲の表示 or 編集用のDatePicker */}
       {editingId === todo.id ? (
         <DatePicker
           selectsRange
@@ -81,13 +87,17 @@ export default function TodoItem({
         </p>
       )}
 
+      {/* 操作ボタン群 */}
       <div>
+        {/* 完了/未完了トグル */}
         <button
           className={`todo-Btn ${editingId === todo.id ? "hide" : ""}`}
           onClick={() => handleState(todo.id)}
         >
           {todo.status === false ? "完了" : "未完了"}
         </button>
+
+        {/* 編集中なら「保存」、通常時は「修正」 */}
         {editingId === todo.id ? (
           <button
             className="todo-Btn complete"
@@ -105,6 +115,8 @@ export default function TodoItem({
             修正
           </button>
         )}
+
+        {/* 削除ボタン（編集中は非表示） */}
         <button
           className={`todo-Btn del ${editingId === todo.id ? "hide" : ""}`}
           onClick={() => handleDelete(todo.id)}
