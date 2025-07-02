@@ -1,6 +1,7 @@
 import DatePicker from "react-datepicker";
 import { ja } from "date-fns/locale";
 import { forwardRef } from "react";
+import "react-datepicker/dist/react-datepicker.css"; // ✅ 필수
 
 const CustomInput = forwardRef(({ value, onClick }, ref) => (
   <input
