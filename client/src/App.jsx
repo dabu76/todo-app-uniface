@@ -1,33 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import { isSameDay } from "date-fns";
-
-// カレンダーライブラリ
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { fi, ja } from "date-fns/locale";
-import { forwardRef } from "react";
-import confetti from "canvas-confetti";
 import axios from "axios";
+import confetti from "canvas-confetti";
+
+// 分離されたコンポーネントの読み込み
+import TodoItem from "./components/TodoItem";
+import TodoForm from "./components/TodoForm";
+import FilterButtons from "./components/FilterButtons";
+import ErrorMessage from "./components/ErrorMessage";
+
+// エラーメッセージ定数
+import { ERROR_MESSAGES } from "./constants/messages";
 import "./App.css";
 
 function App() {
-  // バックエンドサーバー連結
-  // ここをAzureにデプロイされたバックエンドのURLに変更します。
+  // バックエンドサーバーのURL
+  // AzureにデプロイされたバックエンドのURLに書き換えてください
   const API_BASE =
     "https://webapp-todo-e4e7dphfcyb2e6ae.canadacentral-01.azurewebsites.net/api/todo";
-  // カレンダーライブラリ変数
-  const [content, setContent] = useState("");
-  const [status, setStatus] = useState(false);
-  const [selectedDate, setSelectedDate] = useState([null, null]);
-  const [todos, setTodos] = useState([]);
-  const nextId = useRef(1);
-  const [error, setError] = useState("");
-  const nowDate = new Date();
-  const [editingId, setEditingId] = useState(false);
-  const [editContent, setEditContent] = useState("");
-  const [editDate, setEditDate] = useState([null, null]);
-  const [filter, setFilter] = useState("undone");
 
+  // カレンダー関連の状態管理
+  const [content, setContent] = useState(""); // 入力されたTODO内容
+  const [status, setStatus] = useState(false); // 完了ステータス
+  const [selectedDate, setSelectedDate] = useState([null, null]); // 予定日の範囲
+  const [todos, setTodos] = useState([]); // すべてのTODO
+  const [error, setError] = useState(""); // エラーメッセージ表示用
+  const nowDate = new Date(); // 現在日時
+  const [editingId, setEditingId] = useState(false); // 編集中のTODOのID
+  const [editContent, setEditContent] = useState(""); // 編集用内容
+  const [editDate, setEditDate] = useState([null, null]); // 編集用日付
+  const [filter, setFilter] = useState("undone"); // フィルター状態
+
+  // アプリ起動時にTODO一覧を取得
   useEffect(() => {
     axios
       .get(API_BASE)
@@ -38,24 +42,15 @@ function App() {
         console.error("読み込み失敗", err);
       });
   }, []);
-  // カスタム入力フィールド
-  const CustomInput = forwardRef(({ value, onClick }, ref) => (
-    <input
-      className="datepicker-input"
-      onClick={onClick}
-      ref={ref}
-      value={value}
-      readOnly
-      placeholder="予定日を選択してください"
-    />
-  ));
-  //修正押すと対象のcontentをinputに変わるし内容を変数に保存
+
+  // 「修正」ボタン押下時、対象のデータを編集用ステートにセット
   const handleModify = (id, content, startDate, endDate) => {
     setEditingId(id);
     setEditContent(content);
     setEditDate([startDate, endDate]);
   };
-  //保存を押すとmodifyから貰う変数を実際のtodoに保存して変換
+
+  // 「保存」ボタン押下時、編集データを反映
   const handleUpdate = async (id) => {
     try {
       const updated = {
@@ -64,12 +59,13 @@ function App() {
         endDate: editDate[1],
         updatedAt: nowDate,
       };
-      //修正をバックエンドに送信
+      // バックエンドにPUT送信
       await axios.put(`${API_BASE}/${id}`, {
         ...updated,
         status: todos.find((t) => t.id === id).status,
       });
 
+      // フロント側でも状態更新
       const updatedTodos = todos.map((todo) =>
         todo.id === id ? { ...todo, ...updated } : todo
       );
@@ -81,9 +77,9 @@ function App() {
       console.error("更新失敗", err);
     }
   };
-  // 削除ボタンを押すと、対象のTODOを除外する
+
+  // 「削除」ボタン押下時、対象TODOを削除
   const handleDelete = async (id) => {
-    //削除をバックエンドに送信
     try {
       await axios.delete(`${API_BASE}/${id}`);
       setTodos(todos.filter((todo) => todo.id !== id));
@@ -91,12 +87,14 @@ function App() {
       console.error("削除失敗", err);
     }
   };
-  //状態stateを変換
+
+  // 「完了／未完了」トグル切り替え
   const handleState = (id) => {
     const updatedTodos = todos.map((todo) => {
       if (todo.id === id) {
         const newStatus = !todo.status;
         if (!todo.status && newStatus) {
+          // 完了時にお祝い演出
           confetti({
             particleCount: 100,
             spread: 70,
@@ -105,7 +103,7 @@ function App() {
         }
         return {
           ...todo,
-          status: todo.status === true ? false : true,
+          status: newStatus,
           updatedAt: nowDate,
         };
       }
@@ -114,32 +112,35 @@ function App() {
 
     setTodos(updatedTodos);
   };
-  //時間を今日の12時に設定
+
+  // 指定日が今日より前かどうか判定
   const isSameOrBeforeToday = (inputDate) => {
     const today = nowDate;
-    today.setHours(0, 0, 0, 0); // 今日を 00:00:00で リセット
+    today.setHours(0, 0, 0, 0);
     const target = new Date(inputDate);
     target.setHours(0, 0, 0, 0);
     return target < today;
   };
-  //TODO登録
+
+  // TODO登録処理
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //内容を書いてない場合
+
+    // 内容が未入力または日付が未選択
     if (
       content.trim() === "" ||
       !Array.isArray(selectedDate) ||
       !selectedDate[0]
     ) {
-      setError("内容もしくは日付を入力してください");
+      setError(ERROR_MESSAGES.EMPTY_INPUT);
       return;
     }
-    //過去日の場合
+    // 過去日が選択された場合
     else if (isSameOrBeforeToday(selectedDate[0])) {
-      setError("過去の日付は設定できません");
+      setError(ERROR_MESSAGES.PAST_DATE);
       return;
     }
-
+    //新しいTODOデータ
     const newTodo = {
       content,
       status,
@@ -147,8 +148,8 @@ function App() {
       endDate: selectedDate[1],
     };
 
-    //登録をバックエンドに送信
     try {
+      // バックエンドへPOST送信
       const res = await axios.post(API_BASE, newTodo);
       setTodos([...todos, res.data]);
       setContent("");
@@ -159,22 +160,23 @@ function App() {
     }
   };
 
-  //全件、完了、未完了押すとstateを設定
+  // フィルター状態を切り替え（全件／完了／未完了／本日）
   const handleFilter = (e) => {
     setFilter(e);
   };
 
+  // 本日が期限のTODOを抽出
   const todayTodos = todos.filter((todo) =>
     isSameDay(new Date(todo.endDate), nowDate)
   );
   const todayCount = todayTodos.length;
 
-  //設定した変数でfilterを実行
+  // フィルターに応じて表示するTODOを制御
   const filteredTodos = todos.filter((todo) => {
     if (filter === "done") return todo.status === true;
     if (filter === "undone") return todo.status === false;
     if (filter === "today") return todayTodos.includes(todo);
-    return true; // all 포함
+    return true;
   });
 
   return (
@@ -187,146 +189,38 @@ function App() {
           </p>
         </h1>
       </div>
-      <div className="error">{error}</div>
+
+      {/* エラーメッセージ表示 */}
+      <ErrorMessage className="error" message={error} />
+
       {/* TODO登録フォーム */}
-      <form onSubmit={handleSubmit} className="todo-form">
-        <input
-          type="text"
-          placeholder="内容（全角100文字以内）"
-          maxLength={100}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        {/*カスタムカレンダー */}
-        <DatePicker
-          selectsRange
-          startDate={Array.isArray(selectedDate) ? selectedDate[0] : null}
-          endDate={Array.isArray(selectedDate) ? selectedDate[1] : null}
-          onChange={(update) => setSelectedDate(update)}
-          locale={ja}
-          dateFormat="yyyy年MM月dd日（eee）"
-          customInput={<CustomInput />}
-        />
+      <TodoForm
+        content={content}
+        setContent={setContent}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        handleSubmit={handleSubmit}
+      />
 
-        <button type="submit">登録</button>
-      </form>
-
-      {/* フィルター切り替えボタン */}
-      <div className="filter-buttons">
-        <button className="todo-Btn" onClick={() => handleFilter("today")}>
-          ToDo
-        </button>
-        <button className="todo-Btn" onClick={() => handleFilter("all")}>
-          全件
-        </button>
-        <button className="todo-Btn" onClick={() => handleFilter("undone")}>
-          未完了のみ
-        </button>
-        <button className="todo-Btn" onClick={() => handleFilter("done")}>
-          完了のみ
-        </button>
-      </div>
+      {/* フィルターボタン */}
+      <FilterButtons onFilterChange={handleFilter} />
 
       {/* TODO一覧表示 */}
       <ul>
         {filteredTodos.map((todo) => (
-          <li className={editingId === todo.id ? "editing" : ""} key={todo.id}>
-            {editingId === todo.id ? (
-              <input
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-              />
-            ) : (
-              <p className={todo.status ? "done" : ""}>内容: {todo.content}</p>
-            )}
-            <p className={todo.status ? "done" : ""}>
-              {todo.updatedAt !== todo.createdAt
-                ? "登録日時 : "
-                : "再修正日時 : "}
-              {todo.startDate &&
-                !isNaN(new Date(todo.startDate)) &&
-                new Intl.DateTimeFormat("ja-JP", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  weekday: "short",
-                }).format(new Date(todo.startDate))}
-            </p>
-            {editingId === todo.id ? (
-              <DatePicker
-                selectsRange
-                startDate={Array.isArray(editDate) ? editDate[0] : null}
-                endDate={Array.isArray(editDate) ? editDate[1] : null}
-                onChange={(update) => setEditDate(update)}
-                locale={ja}
-                dateFormat="yyyy年MM月dd日（eee）"
-                customInput={<CustomInput />}
-              />
-            ) : (
-              <p className={todo.status ? "done" : ""}>
-                {"予定日 : "}
-                {todo.startDate &&
-                  !isNaN(new Date(todo.startDate)) &&
-                  new Intl.DateTimeFormat("ja-JP", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    weekday: "short",
-                  }).format(new Date(todo.startDate))}
-                {todo.endDate &&
-                  todo.startDate !== todo.endDate &&
-                  !isNaN(new Date(todo.endDate)) && (
-                    <>
-                      {" ～ "}
-                      {new Intl.DateTimeFormat("ja-JP", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        weekday: "short",
-                      }).format(new Date(todo.endDate))}
-                    </>
-                  )}
-              </p>
-            )}
-            <div>
-              <button
-                className={`todo-Btn ${editingId === todo.id ? "hide" : ""}`}
-                onClick={() => handleState(todo.id)}
-              >
-                {todo.status === false ? "完了" : "未完了"}
-              </button>
-              {editingId === todo.id ? (
-                <button
-                  className="todo-Btn complete"
-                  onClick={() => handleUpdate(todo.id)}
-                >
-                  保存
-                </button>
-              ) : (
-                <button
-                  className="todo-Btn"
-                  onClick={() =>
-                    handleModify(
-                      todo.id,
-                      todo.content,
-                      todo.startDate,
-                      todo.endDate
-                    )
-                  }
-                >
-                  修正
-                </button>
-              )}
-              <button
-                className={`todo-Btn del ${
-                  editingId === todo.id ? "hide" : ""
-                }`}
-                onClick={() => handleDelete(todo.id)}
-              >
-                削除
-              </button>
-            </div>
-          </li>
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            editingId={editingId}
+            editContent={editContent}
+            editDate={editDate}
+            setEditContent={setEditContent}
+            setEditDate={setEditDate}
+            handleUpdate={handleUpdate}
+            handleDelete={handleDelete}
+            handleState={handleState}
+            handleModify={handleModify}
+          />
         ))}
       </ul>
     </div>
