@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/dabu76/todo-app-uniface/issues"
   },
-  "homepage": "https://github.com/dabu76/todo-app-uniface#readme"
+  "homepage": "https://github.com/dabu76/todo-app-uniface#readme",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "jest": "^30.0.4",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4"
+  }
 }
