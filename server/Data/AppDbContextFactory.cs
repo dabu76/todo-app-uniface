@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using server.Data;
-//서버 연결해주는걸
+
+// EF Core CLI でのマイグレーション作成用の DbContext ファクトリークラス。
 namespace server.Data
 {
 	public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -17,8 +17,8 @@ namespace server.Tests
         {
             _client = factory.CreateClient();
         }
-        //Æ÷½ºÆ®¸¦ ½á¼­ ¿¡ÀÌÇÇ¾ÆÀÌ¿¡´Ù°¡ Áà¼­ ¸¸µé¾îÁö´ÂÁö Å×½ºÆ® ÇÔ Áö±İ ÇÏ³­µ¥ 3°³ (µô¸®Æ® ¾÷µ¥ÀÌÆ® Ç²À» ¸¸µé¾î¼­ ÄÁÆ®·Ñ·¯¿¡´ëÇÑ 
-        //UTÅ×½ºÆ®¸¦ ¿Ï¼ºÇÏ´Â°Ô ÁÁÀ»°Å°°´Ù
+
+        // æ–°ã—ã„TODOã‚’ç™»éŒ²ã—ãŸã¨ãã«ã€201 Created ãŒè¿”ã•ã‚Œã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹ãƒ†ã‚¹ãƒˆ
         [Fact]
         public async Task PostTodo_Returns_Created()
         {
@@ -34,6 +34,77 @@ namespace server.Tests
             var response = await _client.PostAsync("/api/todo", content);
 
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.Created);
+        }
+
+        // TODOãƒªã‚¹ãƒˆã‚’å–å¾—ã—ãŸã¨ãã«ã€200 OK ãŒè¿”ã•ã‚Œã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹ãƒ†ã‚¹ãƒˆ
+        [Fact]
+        public async Task GetTodos_Returns_OK()
+        {
+            var response = await _client.GetAsync("/api/todo");
+
+            response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        }
+
+        // ç™»éŒ²ã—ãŸTODOã‚’æ›´æ–°ã—ã€204 No Content ãŒè¿”ã•ã‚Œã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹ãƒ†ã‚¹ãƒˆ
+        [Fact]
+        public async Task PutTodo_Returns_NoContent()
+        {
+            // ã¾ãšæ–°ã—ã„TODOã‚’ç™»éŒ²
+            var newTodo = new
+            {
+                content = "Put Test",
+                status = false,
+                startDate = DateTime.UtcNow,
+                endDate = DateTime.UtcNow.AddDays(1)
+            };
+            var postContent = new StringContent(JsonSerializer.Serialize(newTodo), Encoding.UTF8, "application/json");
+            var postResponse = await _client.PostAsync("/api/todo", postContent);
+            postResponse.EnsureSuccessStatusCode();
+
+            // ç™»éŒ²ã•ã‚ŒãŸIDã‚’å–å¾—
+            var createdJson = await postResponse.Content.ReadAsStringAsync();
+            var created = JsonDocument.Parse(createdJson);
+            var id = created.RootElement.GetProperty("id").GetInt32();
+
+            // æ›´æ–°å‡¦ç†
+            var updatedTodo = new
+            {
+                content = "Updated Content",
+                status = true,
+                startDate = DateTime.UtcNow.AddDays(2),
+                endDate = DateTime.UtcNow.AddDays(3)
+            };
+            var putContent = new StringContent(JsonSerializer.Serialize(updatedTodo), Encoding.UTF8, "application/json");
+            var putResponse = await _client.PutAsync($"/api/todo/{id}", putContent);
+
+            putResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
+        }
+
+        // ç™»éŒ²ã•ã‚ŒãŸTODOã‚’å‰Šé™¤ã—ã€204 No Content ãŒè¿”ã•ã‚Œã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹ãƒ†ã‚¹ãƒˆ
+        [Fact]
+        public async Task DeleteTodo_Returns_NoContent()
+        {
+            // ã¾ãšæ–°ã—ã„TODOã‚’ç™»éŒ²
+            var newTodo = new
+            {
+                content = "Delete Test",
+                status = false,
+                startDate = DateTime.UtcNow,
+                endDate = DateTime.UtcNow.AddDays(1)
+            };
+            var postContent = new StringContent(JsonSerializer.Serialize(newTodo), Encoding.UTF8, "application/json");
+            var postResponse = await _client.PostAsync("/api/todo", postContent);
+            postResponse.EnsureSuccessStatusCode();
+
+            // ç™»éŒ²ã•ã‚ŒãŸIDã‚’å–å¾—
+            var createdJson = await postResponse.Content.ReadAsStringAsync();
+            var created = JsonDocument.Parse(createdJson);
+            var id = created.RootElement.GetProperty("id").GetInt32();
+
+            // å‰Šé™¤å‡¦ç†
+            var deleteResponse = await _client.DeleteAsync($"/api/todo/{id}");
+
+            deleteResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.NoContent);
         }
     }
 }

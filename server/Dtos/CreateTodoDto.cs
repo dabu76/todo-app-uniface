@@ -1,4 +1,4 @@
-// CreateTodoDto.cs
+// CreateTodoDto£º«¯«é«¤«¢«ó«Èª«ªéáêãáªµªìªëToDoíÂà÷«ê«¯«¨«¹«Èªòáôª±ö¢ªëª¿ªáªÎDTO£¨Data Transfer Object£©
 namespace server.Dtos
 {
     public class CreateTodoDto  

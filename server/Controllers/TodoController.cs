@@ -1,5 +1,5 @@
-// 모델-뷰-컨트롤러에서 컨트롤러 역할
-// 외부에서 들어오는 요청을 라우팅하고, DB와 연결되는 처리 담당
+// 外部からのリクエストをルーティングし、DBと連携する処理を行う
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
@@ -9,19 +9,18 @@ using server.Dtos;
 namespace server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // /api/todo 로 매핑됨
+    [Route("api/[controller]")] 
     public class TodoController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        // 의존성 주입 (DbContext) - 느슨한 결합을 위해 사용
+        // DI（依存性注入）によってDbContextを受け取る。疎結合のために使用。
         public TodoController(AppDbContext context)
         {
             _context = context;
         }
 
-        //  GET: api/todo
-        // 할 일 목록 전체 조회
+        // Todo一覧の取得
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Todo>>> GetTodos()
         {
@@ -31,40 +30,42 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" GET エラー: " + ex.ToString()); // 로그 스트리밍에 출력됨
+                Console.WriteLine("GET エラー: " + ex.ToString()); 
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
+        // DB接続テスト用エンドポイント
         [HttpGet("test-connection")]
         public async Task<IActionResult> TestConnection()
         {
             try
             {
                 await _context.Database.OpenConnectionAsync();
-                Console.WriteLine("DB連結成功");
+                Console.WriteLine("DB接続成功");
                 await _context.Database.CloseConnectionAsync();
-                return Ok("DB 연결 성공");
+                return Ok("DB接続成功");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DB連結 失敗: " + ex.ToString());
-                return StatusCode(500, "DB連結 失敗");
+                Console.WriteLine("DB接続失敗: " + ex.ToString());
+                return StatusCode(500, "DB接続失敗");
             }
         }
-        //  POST: api/todo
-        // 새로운 할 일 추가
+
+        // 新しいTodoを追加
         [HttpPost]
         public async Task<ActionResult<Todo>> CreateTodo([FromBody] CreateTodoDto dto)
         {
             try
             {
-                // 기본 검증
+                // バリデーション
                 if (string.IsNullOrEmpty(dto.Content))
-                    return BadRequest("Content is required.");
+                    return BadRequest("Contentは必須です。");
                 if (dto.StartDate == null || dto.EndDate == null)
-                    return BadRequest("StartDate and EndDate are required.");
+                    return BadRequest("開始日と終了日は必須です。");
 
-                // DTO → Entity 변환
+                // DTO → Entity 変換
                 var todo = new Todo
                 {
                     Content = dto.Content,
@@ -75,38 +76,36 @@ namespace server.Controllers
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                _context.Todos.Add(todo); // DB에 등록
-                await _context.SaveChangesAsync(); // 저장
+                _context.Todos.Add(todo); // DBに追加
+                await _context.SaveChangesAsync(); // 保存
 
-                // 201 Created 응답 + 등록된 리소스 반환
                 return CreatedAtAction(nameof(GetTodos), new { id = todo.Id }, todo);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("POST エラー: " + ex.ToString()); // 예외 로그 출력
+                Console.WriteLine("POST エラー: " + ex.ToString());
                 return StatusCode(500, "Internal Server Error");
             }
         }
 
-        //  PUT: api/todo/{id}
-        // 특정 할 일 수정
+        // 指定したTodoの更新
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTodo(int id, [FromBody] CreateTodoDto dto)
         {
             try
             {
                 var todo = await _context.Todos.FindAsync(id);
-                if (todo == null) return NotFound(); // 해당 ID 없음
+                if (todo == null) return NotFound();
 
-                // 변경 값 적용
+                // 値の更新
                 todo.Content = dto.Content;
                 todo.Status = dto.Status;
                 if (dto.StartDate != null) todo.StartDate = dto.StartDate.Value;
                 if (dto.EndDate != null) todo.EndDate = dto.EndDate.Value;
                 todo.UpdatedAt = DateTime.UtcNow;
 
-                await _context.SaveChangesAsync(); // 저장
-                return NoContent(); // 204 응답
+                await _context.SaveChangesAsync();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -115,8 +114,7 @@ namespace server.Controllers
             }
         }
 
-        //  DELETE: api/todo/{id}
-        // 특정 할 일 삭제
+        // 指定したTodoの削除
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodo(int id)
         {
@@ -132,7 +130,7 @@ namespace server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(" DELETE エラー: " + ex.ToString());
+                Console.WriteLine("DELETE エラー: " + ex.ToString());
                 return StatusCode(500, "Internal Server Error");
             }
         }
